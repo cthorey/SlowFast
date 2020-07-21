@@ -1,0 +1,1064 @@
+[07/19 14:10:22][INFO] train_net:  357: Train with config:
+[07/19 14:10:22][INFO] train_net:  358: {'AVA': {'ANNOTATION_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'BGR': False,
+         'DETECTION_SCORE_THRESH': 0.9,
+         'EXCLUSION_FILE': 'ava_val_excluded_timestamps_v2.2.csv',
+         'FRAME_DIR': '/mnt/fair-flash3-east/ava_trainval_frames.img/',
+         'FRAME_LIST_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'FULL_TEST_ON_VAL': False,
+         'GROUNDTRUTH_FILE': 'ava_val_v2.2.csv',
+         'IMG_PROC_BACKEND': 'cv2',
+         'LABEL_MAP_FILE': 'ava_action_list_v2.2_for_activitynet_2019.pbtxt',
+         'TEST_FORCE_FLIP': False,
+         'TEST_LISTS': ['val.csv'],
+         'TEST_PREDICT_BOX_LISTS': ['ava_val_predicted_boxes.csv'],
+         'TRAIN_GT_BOX_LISTS': ['ava_train_v2.2.csv'],
+         'TRAIN_LISTS': ['train.csv'],
+         'TRAIN_PCA_EIGVAL': [0.225, 0.224, 0.229],
+         'TRAIN_PCA_EIGVEC': [[-0.5675, 0.7192, 0.4009],
+                              [-0.5808, -0.0045, -0.814],
+                              [-0.5836, -0.6948, 0.4203]],
+         'TRAIN_PCA_JITTER_ONLY': True,
+         'TRAIN_PREDICT_BOX_LISTS': [],
+         'TRAIN_USE_COLOR_AUGMENTATION': False},
+ 'BENCHMARK': CfgNode({'NUM_EPOCHS': 5, 'LOG_PERIOD': 100, 'SHUFFLE': True}),
+ 'BN': {'NORM_TYPE': 'batchnorm',
+        'NUM_BATCHES_PRECISE': 200,
+        'NUM_SPLITS': 1,
+        'NUM_SYNC_DEVICES': 1,
+        'USE_PRECISE_STATS': True,
+        'WEIGHT_DECAY': 0.0},
+ 'DATA': {'CROP_SIZE': 224,
+          'DECODING_BACKEND': 'pyav',
+          'ENSEMBLE_METHOD': 'sum',
+          'INPUT_CHANNEL_NUM': [3],
+          'INV_UNIFORM_SAMPLE': False,
+          'MEAN': [0.45, 0.45, 0.45],
+          'MULTI_LABEL': False,
+          'NUM_FRAMES': 8,
+          'PATH_LABEL_SEPARATOR': ' ',
+          'PATH_PREFIX': '',
+          'PATH_TO_DATA_DIR': 'path_to_your_dataset',
+          'RANDOM_FLIP': True,
+          'REVERSE_INPUT_CHANNEL': False,
+          'SAMPLING_RATE': 8,
+          'STD': [0.225, 0.225, 0.225],
+          'TARGET_FPS': 30,
+          'TEST_CROP_SIZE': 256,
+          'TRAIN_CROP_SIZE': 224,
+          'TRAIN_JITTER_SCALES': [256, 320]},
+ 'DATA_LOADER': {'ENABLE_MULTI_THREAD_DECODE': False,
+                 'NUM_WORKERS': 8,
+                 'PIN_MEMORY': True},
+ 'DEMO': {'DATA_SOURCE': 0,
+          'DETECTRON2_OBJECT_DETECTION_MODEL_CFG': '',
+          'DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS': '',
+          'DISPLAY_HEIGHT': 0,
+          'DISPLAY_WIDTH': 0,
+          'ENABLE': False,
+          'LABEL_FILE_PATH': '',
+          'OUTPUT_FILE': ''},
+ 'DETECTION': {'ALIGNED': True,
+               'ENABLE': False,
+               'ROI_XFORM_RESOLUTION': 7,
+               'SPATIAL_SCALE_FACTOR': 16},
+ 'DIST_BACKEND': 'nccl',
+ 'LOG_MODEL_INFO': True,
+ 'LOG_PERIOD': 10,
+ 'MODEL': {'ARCH': 'c2d',
+           'DROPOUT_RATE': 0.5,
+           'FC_INIT_STD': 0.01,
+           'HEAD_ACT': 'softmax',
+           'LOSS_FUNC': 'cross_entropy',
+           'MODEL_NAME': 'ResNet',
+           'MULTI_PATHWAY_ARCH': ['slowfast'],
+           'NUM_CLASSES': 400,
+           'SINGLE_PATHWAY_ARCH': ['c2d', 'i3d', 'slow']},
+ 'MULTIGRID': {'BN_BASE_SIZE': 8,
+               'DEFAULT_B': 0,
+               'DEFAULT_S': 0,
+               'DEFAULT_T': 0,
+               'EPOCH_FACTOR': 1.5,
+               'EVAL_FREQ': 3,
+               'LONG_CYCLE': False,
+               'LONG_CYCLE_FACTORS': [(0.25, 0.7071067811865476),
+                                      (0.5, 0.7071067811865476),
+                                      (0.5, 1),
+                                      (1, 1)],
+               'LONG_CYCLE_SAMPLING_RATE': 0,
+               'SHORT_CYCLE': False,
+               'SHORT_CYCLE_FACTORS': [0.5, 0.7071067811865476]},
+ 'NONLOCAL': {'GROUP': [[1], [1], [1], [1]],
+              'INSTANTIATION': 'softmax',
+              'LOCATION': [[[]], [[]], [[]], [[]]],
+              'POOL': [[[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]]]},
+ 'NUM_GPUS': 2,
+ 'NUM_SHARDS': 1,
+ 'OUTPUT_DIR': '.',
+ 'RESNET': {'DEPTH': 50,
+            'INPLACE_RELU': True,
+            'NUM_BLOCK_TEMP_KERNEL': [[3], [4], [6], [3]],
+            'NUM_GROUPS': 1,
+            'SPATIAL_DILATIONS': [[1], [1], [1], [1]],
+            'SPATIAL_STRIDES': [[1], [2], [2], [2]],
+            'STRIDE_1X1': False,
+            'TRANS_FUNC': 'bottleneck_transform',
+            'WIDTH_PER_GROUP': 64,
+            'ZERO_INIT_FINAL_BN': True},
+ 'RNG_SEED': 0,
+ 'SHARD_ID': 0,
+ 'SLOWFAST': {'ALPHA': 8,
+              'BETA_INV': 8,
+              'FUSION_CONV_CHANNEL_RATIO': 2,
+              'FUSION_KERNEL_SZ': 5},
+ 'SOLVER': {'BASE_LR': 0.1,
+            'DAMPENING': 0.0,
+            'GAMMA': 0.1,
+            'LRS': [],
+            'LR_POLICY': 'cosine',
+            'MAX_EPOCH': 196,
+            'MOMENTUM': 0.9,
+            'NESTEROV': True,
+            'OPTIMIZING_METHOD': 'sgd',
+            'STEPS': [],
+            'STEP_SIZE': 1,
+            'WARMUP_EPOCHS': 34.0,
+            'WARMUP_FACTOR': 0.1,
+            'WARMUP_START_LR': 0.01,
+            'WEIGHT_DECAY': 0.0001},
+ 'TENSORBOARD': {'CATEGORIES_PATH': '',
+                 'CLASS_NAMES_PATH': '',
+                 'CONFUSION_MATRIX': {'ENABLE': False,
+                                      'FIGSIZE': [8, 8],
+                                      'SUBSET_PATH': ''},
+                 'ENABLE': False,
+                 'HISTOGRAM': {'ENABLE': False,
+                               'FIGSIZE': [8, 8],
+                               'SUBSET_PATH': '',
+                               'TOPK': 10},
+                 'LOG_DIR': '',
+                 'MODEL_VIS': CfgNode({'ENABLE': False})},
+ 'TEST': {'BATCH_SIZE': 64,
+          'CHECKPOINT_FILE_PATH': '',
+          'CHECKPOINT_TYPE': 'pytorch',
+          'DATASET': 'kinetics',
+          'ENABLE': True,
+          'NUM_ENSEMBLE_VIEWS': 10,
+          'NUM_SPATIAL_CROPS': 3},
+ 'TRAIN': {'AUTO_RESUME': True,
+           'BATCH_SIZE': 16,
+           'CHECKPOINT_FILE_PATH': '',
+           'CHECKPOINT_INFLATE': False,
+           'CHECKPOINT_PERIOD': 1,
+           'CHECKPOINT_TYPE': 'pytorch',
+           'DATASET': 'kinetics',
+           'ENABLE': True,
+           'EVAL_PERIOD': 10}}
+[07/19 14:10:25][INFO] slowfast.utils.misc:  155: Model:
+DistributedDataParallel(
+  (module): ResNet(
+    (s1): VideoModelStem(
+      (pathway0_stem): ResNetBasicStem(
+        (conv): Conv3d(3, 64, kernel_size=[1, 7, 7], stride=[1, 2, 2], padding=[0, 3, 3], bias=False)
+        (bn): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+        (pool_layer): MaxPool3d(kernel_size=[1, 3, 3], stride=[1, 2, 2], padding=[0, 1, 1], dilation=1, ceil_mode=False)
+      )
+    )
+    (s2): ResStage(
+      (pathway0_res0): ResBlock(
+        (branch1): Conv3d(64, 256, kernel_size=(1, 1, 1), stride=[1, 1, 1], bias=False)
+        (branch1_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (branch2): BottleneckTransform(
+          (a): Conv3d(64, 64, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(64, 64, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(64, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res1): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(256, 64, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(64, 64, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(64, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res2): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(256, 64, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(64, 64, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(64, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (pathway0_pool): MaxPool3d(kernel_size=[2, 1, 1], stride=[2, 1, 1], padding=[0, 0, 0], dilation=1, ceil_mode=False)
+    (s3): ResStage(
+      (pathway0_res0): ResBlock(
+        (branch1): Conv3d(256, 512, kernel_size=(1, 1, 1), stride=[1, 2, 2], bias=False)
+        (branch1_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (branch2): BottleneckTransform(
+          (a): Conv3d(256, 128, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(128, 128, kernel_size=[1, 3, 3], stride=[1, 2, 2], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(128, 512, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res1): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(512, 128, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(128, 128, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(128, 512, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res2): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(512, 128, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(128, 128, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(128, 512, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res3): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(512, 128, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(128, 128, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(128, 512, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (s4): ResStage(
+      (pathway0_res0): ResBlock(
+        (branch1): Conv3d(512, 1024, kernel_size=(1, 1, 1), stride=[1, 2, 2], bias=False)
+        (branch1_bn): BatchNorm3d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (branch2): BottleneckTransform(
+          (a): Conv3d(512, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(256, 256, kernel_size=[1, 3, 3], stride=[1, 2, 2], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(256, 1024, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res1): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(1024, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(256, 256, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(256, 1024, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res2): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(1024, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(256, 256, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(256, 1024, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res3): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(1024, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(256, 256, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(256, 1024, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res4): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(1024, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(256, 256, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(256, 1024, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res5): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(1024, 256, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(256, 256, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(256, 1024, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (s5): ResStage(
+      (pathway0_res0): ResBlock(
+        (branch1): Conv3d(1024, 2048, kernel_size=(1, 1, 1), stride=[1, 2, 2], bias=False)
+        (branch1_bn): BatchNorm3d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (branch2): BottleneckTransform(
+          (a): Conv3d(1024, 512, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(512, 512, kernel_size=[1, 3, 3], stride=[1, 2, 2], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(512, 2048, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res1): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(2048, 512, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(512, 512, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(512, 2048, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+      (pathway0_res2): ResBlock(
+        (branch2): BottleneckTransform(
+          (a): Conv3d(2048, 512, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (a_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (a_relu): ReLU(inplace=True)
+          (b): Conv3d(512, 512, kernel_size=[1, 3, 3], stride=[1, 1, 1], padding=[0, 1, 1], dilation=[1, 1, 1], bias=False)
+          (b_bn): BatchNorm3d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (b_relu): ReLU(inplace=True)
+          (c): Conv3d(512, 2048, kernel_size=[1, 1, 1], stride=[1, 1, 1], padding=[0, 0, 0], bias=False)
+          (c_bn): BatchNorm3d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (head): ResNetBasicHead(
+      (pathway0_avgpool): AvgPool3d(kernel_size=[4, 7, 7], stride=1, padding=0)
+      (dropout): Dropout(p=0.5, inplace=False)
+      (projection): Linear(in_features=2048, out_features=400, bias=True)
+      (act): Softmax(dim=4)
+    )
+  )
+)
+[07/19 14:10:25][INFO] slowfast.utils.misc:  156: Params: 24,327,632
+[07/19 14:10:25][INFO] slowfast.utils.misc:  157: Mem: 0.18267822265625 MB
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::batch_norm 53 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::relu_ 49 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::max_pool3d 2 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::add 16 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::avg_pool3d 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::dropout 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::add_ 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::softmax 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.flop_count:   63: Skipped operation aten::mean 1 time(s)
+[07/19 14:10:25][INFO] slowfast.utils.misc:  160: Flops: 19.49319168 G
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::batch_norm 53 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::relu_ 49 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::max_pool3d 2 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::add 16 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::avg_pool3d 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::dropout 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::matmul 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::add_ 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::softmax 1 time(s)
+[07/19 14:10:25][WARNING] fvcore.nn.activation_count:   54: Skipped operation aten::mean 1 time(s)
+[07/19 14:10:25][INFO] slowfast.utils.misc:  165: Activations: 65.329152 M
+[07/19 14:10:25][INFO] slowfast.utils.misc:  168: nvidia-smi
+[07/19 14:10:26][INFO] slowfast.datasets.kinetics:   73: Constructing Kinetics train...
+[07/19 14:44:36][INFO] train_net:  357: Train with config:
+[07/19 14:44:36][INFO] train_net:  358: {'AVA': {'ANNOTATION_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'BGR': False,
+         'DETECTION_SCORE_THRESH': 0.9,
+         'EXCLUSION_FILE': 'ava_val_excluded_timestamps_v2.2.csv',
+         'FRAME_DIR': '/mnt/fair-flash3-east/ava_trainval_frames.img/',
+         'FRAME_LIST_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'FULL_TEST_ON_VAL': False,
+         'GROUNDTRUTH_FILE': 'ava_val_v2.2.csv',
+         'IMG_PROC_BACKEND': 'cv2',
+         'LABEL_MAP_FILE': 'ava_action_list_v2.2_for_activitynet_2019.pbtxt',
+         'TEST_FORCE_FLIP': False,
+         'TEST_LISTS': ['val.csv'],
+         'TEST_PREDICT_BOX_LISTS': ['ava_val_predicted_boxes.csv'],
+         'TRAIN_GT_BOX_LISTS': ['ava_train_v2.2.csv'],
+         'TRAIN_LISTS': ['train.csv'],
+         'TRAIN_PCA_EIGVAL': [0.225, 0.224, 0.229],
+         'TRAIN_PCA_EIGVEC': [[-0.5675, 0.7192, 0.4009],
+                              [-0.5808, -0.0045, -0.814],
+                              [-0.5836, -0.6948, 0.4203]],
+         'TRAIN_PCA_JITTER_ONLY': True,
+         'TRAIN_PREDICT_BOX_LISTS': [],
+         'TRAIN_USE_COLOR_AUGMENTATION': False},
+ 'BENCHMARK': CfgNode({'NUM_EPOCHS': 5, 'LOG_PERIOD': 100, 'SHUFFLE': True}),
+ 'BN': {'NORM_TYPE': 'batchnorm',
+        'NUM_BATCHES_PRECISE': 200,
+        'NUM_SPLITS': 1,
+        'NUM_SYNC_DEVICES': 1,
+        'USE_PRECISE_STATS': True,
+        'WEIGHT_DECAY': 0.0},
+ 'DATA': {'CROP_SIZE': 224,
+          'DECODING_BACKEND': 'pyav',
+          'ENSEMBLE_METHOD': 'sum',
+          'INPUT_CHANNEL_NUM': [3, 3],
+          'INV_UNIFORM_SAMPLE': False,
+          'MEAN': [0.45, 0.45, 0.45],
+          'MULTI_LABEL': False,
+          'NUM_FRAMES': 32,
+          'PATH_LABEL_SEPARATOR': ' ',
+          'PATH_PREFIX': '',
+          'PATH_TO_DATA_DIR': '',
+          'RANDOM_FLIP': True,
+          'REVERSE_INPUT_CHANNEL': False,
+          'SAMPLING_RATE': 2,
+          'STD': [0.225, 0.225, 0.225],
+          'TARGET_FPS': 30,
+          'TEST_CROP_SIZE': 256,
+          'TRAIN_CROP_SIZE': 224,
+          'TRAIN_JITTER_SCALES': [256, 320]},
+ 'DATA_LOADER': {'ENABLE_MULTI_THREAD_DECODE': False,
+                 'NUM_WORKERS': 8,
+                 'PIN_MEMORY': True},
+ 'DEMO': {'DATA_SOURCE': 0,
+          'DETECTRON2_OBJECT_DETECTION_MODEL_CFG': '',
+          'DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS': '',
+          'DISPLAY_HEIGHT': 0,
+          'DISPLAY_WIDTH': 0,
+          'ENABLE': False,
+          'LABEL_FILE_PATH': '',
+          'OUTPUT_FILE': ''},
+ 'DETECTION': {'ALIGNED': True,
+               'ENABLE': False,
+               'ROI_XFORM_RESOLUTION': 7,
+               'SPATIAL_SCALE_FACTOR': 16},
+ 'DIST_BACKEND': 'nccl',
+ 'LOG_MODEL_INFO': True,
+ 'LOG_PERIOD': 10,
+ 'MODEL': {'ARCH': 'slowfast',
+           'DROPOUT_RATE': 0.5,
+           'FC_INIT_STD': 0.01,
+           'HEAD_ACT': 'softmax',
+           'LOSS_FUNC': 'cross_entropy',
+           'MODEL_NAME': 'SlowFast',
+           'MULTI_PATHWAY_ARCH': ['slowfast'],
+           'NUM_CLASSES': 400,
+           'SINGLE_PATHWAY_ARCH': ['c2d', 'i3d', 'slow']},
+ 'MULTIGRID': {'BN_BASE_SIZE': 8,
+               'DEFAULT_B': 0,
+               'DEFAULT_S': 0,
+               'DEFAULT_T': 0,
+               'EPOCH_FACTOR': 1.5,
+               'EVAL_FREQ': 3,
+               'LONG_CYCLE': False,
+               'LONG_CYCLE_FACTORS': [(0.25, 0.7071067811865476),
+                                      (0.5, 0.7071067811865476),
+                                      (0.5, 1),
+                                      (1, 1)],
+               'LONG_CYCLE_SAMPLING_RATE': 0,
+               'SHORT_CYCLE': False,
+               'SHORT_CYCLE_FACTORS': [0.5, 0.7071067811865476]},
+ 'NONLOCAL': {'GROUP': [[1, 1], [1, 1], [1, 1], [1, 1]],
+              'INSTANTIATION': 'dot_product',
+              'LOCATION': [[[], []], [[], []], [[], []], [[], []]],
+              'POOL': [[[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]]]},
+ 'NUM_GPUS': 8,
+ 'NUM_SHARDS': 1,
+ 'OUTPUT_DIR': '.',
+ 'RESNET': {'DEPTH': 50,
+            'INPLACE_RELU': True,
+            'NUM_BLOCK_TEMP_KERNEL': [[3, 3], [4, 4], [6, 6], [3, 3]],
+            'NUM_GROUPS': 1,
+            'SPATIAL_DILATIONS': [[1, 1], [1, 1], [1, 1], [1, 1]],
+            'SPATIAL_STRIDES': [[1, 1], [2, 2], [2, 2], [2, 2]],
+            'STRIDE_1X1': False,
+            'TRANS_FUNC': 'bottleneck_transform',
+            'WIDTH_PER_GROUP': 64,
+            'ZERO_INIT_FINAL_BN': True},
+ 'RNG_SEED': 0,
+ 'SHARD_ID': 0,
+ 'SLOWFAST': {'ALPHA': 4,
+              'BETA_INV': 8,
+              'FUSION_CONV_CHANNEL_RATIO': 2,
+              'FUSION_KERNEL_SZ': 7},
+ 'SOLVER': {'BASE_LR': 0.1,
+            'DAMPENING': 0.0,
+            'GAMMA': 0.1,
+            'LRS': [],
+            'LR_POLICY': 'cosine',
+            'MAX_EPOCH': 196,
+            'MOMENTUM': 0.9,
+            'NESTEROV': True,
+            'OPTIMIZING_METHOD': 'sgd',
+            'STEPS': [],
+            'STEP_SIZE': 1,
+            'WARMUP_EPOCHS': 34.0,
+            'WARMUP_FACTOR': 0.1,
+            'WARMUP_START_LR': 0.01,
+            'WEIGHT_DECAY': 0.0001},
+ 'TENSORBOARD': {'CATEGORIES_PATH': '',
+                 'CLASS_NAMES_PATH': '',
+                 'CONFUSION_MATRIX': {'ENABLE': False,
+                                      'FIGSIZE': [8, 8],
+                                      'SUBSET_PATH': ''},
+                 'ENABLE': False,
+                 'HISTOGRAM': {'ENABLE': False,
+                               'FIGSIZE': [8, 8],
+                               'SUBSET_PATH': '',
+                               'TOPK': 10},
+                 'LOG_DIR': '',
+                 'MODEL_VIS': CfgNode({'ENABLE': False})},
+ 'TEST': {'BATCH_SIZE': 64,
+          'CHECKPOINT_FILE_PATH': '',
+          'CHECKPOINT_TYPE': 'pytorch',
+          'DATASET': 'kinetics',
+          'ENABLE': True,
+          'NUM_ENSEMBLE_VIEWS': 10,
+          'NUM_SPATIAL_CROPS': 3},
+ 'TRAIN': {'AUTO_RESUME': True,
+           'BATCH_SIZE': 64,
+           'CHECKPOINT_FILE_PATH': '',
+           'CHECKPOINT_INFLATE': False,
+           'CHECKPOINT_PERIOD': 1,
+           'CHECKPOINT_TYPE': 'pytorch',
+           'DATASET': 'kinetics',
+           'ENABLE': True,
+           'EVAL_PERIOD': 10}}
+[07/19 14:45:53][INFO] train_net:  357: Train with config:
+[07/19 14:45:53][INFO] train_net:  358: {'AVA': {'ANNOTATION_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'BGR': False,
+         'DETECTION_SCORE_THRESH': 0.9,
+         'EXCLUSION_FILE': 'ava_val_excluded_timestamps_v2.2.csv',
+         'FRAME_DIR': '/mnt/fair-flash3-east/ava_trainval_frames.img/',
+         'FRAME_LIST_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'FULL_TEST_ON_VAL': False,
+         'GROUNDTRUTH_FILE': 'ava_val_v2.2.csv',
+         'IMG_PROC_BACKEND': 'cv2',
+         'LABEL_MAP_FILE': 'ava_action_list_v2.2_for_activitynet_2019.pbtxt',
+         'TEST_FORCE_FLIP': False,
+         'TEST_LISTS': ['val.csv'],
+         'TEST_PREDICT_BOX_LISTS': ['ava_val_predicted_boxes.csv'],
+         'TRAIN_GT_BOX_LISTS': ['ava_train_v2.2.csv'],
+         'TRAIN_LISTS': ['train.csv'],
+         'TRAIN_PCA_EIGVAL': [0.225, 0.224, 0.229],
+         'TRAIN_PCA_EIGVEC': [[-0.5675, 0.7192, 0.4009],
+                              [-0.5808, -0.0045, -0.814],
+                              [-0.5836, -0.6948, 0.4203]],
+         'TRAIN_PCA_JITTER_ONLY': True,
+         'TRAIN_PREDICT_BOX_LISTS': [],
+         'TRAIN_USE_COLOR_AUGMENTATION': False},
+ 'BENCHMARK': CfgNode({'NUM_EPOCHS': 5, 'LOG_PERIOD': 100, 'SHUFFLE': True}),
+ 'BN': {'NORM_TYPE': 'batchnorm',
+        'NUM_BATCHES_PRECISE': 200,
+        'NUM_SPLITS': 1,
+        'NUM_SYNC_DEVICES': 1,
+        'USE_PRECISE_STATS': True,
+        'WEIGHT_DECAY': 0.0},
+ 'DATA': {'CROP_SIZE': 224,
+          'DECODING_BACKEND': 'pyav',
+          'ENSEMBLE_METHOD': 'sum',
+          'INPUT_CHANNEL_NUM': [3, 3],
+          'INV_UNIFORM_SAMPLE': False,
+          'MEAN': [0.45, 0.45, 0.45],
+          'MULTI_LABEL': False,
+          'NUM_FRAMES': 32,
+          'PATH_LABEL_SEPARATOR': ' ',
+          'PATH_PREFIX': '',
+          'PATH_TO_DATA_DIR': '',
+          'RANDOM_FLIP': True,
+          'REVERSE_INPUT_CHANNEL': False,
+          'SAMPLING_RATE': 2,
+          'STD': [0.225, 0.225, 0.225],
+          'TARGET_FPS': 30,
+          'TEST_CROP_SIZE': 256,
+          'TRAIN_CROP_SIZE': 224,
+          'TRAIN_JITTER_SCALES': [256, 320]},
+ 'DATA_LOADER': {'ENABLE_MULTI_THREAD_DECODE': False,
+                 'NUM_WORKERS': 8,
+                 'PIN_MEMORY': True},
+ 'DEMO': {'DATA_SOURCE': 0,
+          'DETECTRON2_OBJECT_DETECTION_MODEL_CFG': '',
+          'DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS': '',
+          'DISPLAY_HEIGHT': 0,
+          'DISPLAY_WIDTH': 0,
+          'ENABLE': False,
+          'LABEL_FILE_PATH': '',
+          'OUTPUT_FILE': ''},
+ 'DETECTION': {'ALIGNED': True,
+               'ENABLE': False,
+               'ROI_XFORM_RESOLUTION': 7,
+               'SPATIAL_SCALE_FACTOR': 16},
+ 'DIST_BACKEND': 'nccl',
+ 'LOG_MODEL_INFO': True,
+ 'LOG_PERIOD': 10,
+ 'MODEL': {'ARCH': 'slowfast',
+           'DROPOUT_RATE': 0.5,
+           'FC_INIT_STD': 0.01,
+           'HEAD_ACT': 'softmax',
+           'LOSS_FUNC': 'cross_entropy',
+           'MODEL_NAME': 'SlowFast',
+           'MULTI_PATHWAY_ARCH': ['slowfast'],
+           'NUM_CLASSES': 400,
+           'SINGLE_PATHWAY_ARCH': ['c2d', 'i3d', 'slow']},
+ 'MULTIGRID': {'BN_BASE_SIZE': 8,
+               'DEFAULT_B': 0,
+               'DEFAULT_S': 0,
+               'DEFAULT_T': 0,
+               'EPOCH_FACTOR': 1.5,
+               'EVAL_FREQ': 3,
+               'LONG_CYCLE': False,
+               'LONG_CYCLE_FACTORS': [(0.25, 0.7071067811865476),
+                                      (0.5, 0.7071067811865476),
+                                      (0.5, 1),
+                                      (1, 1)],
+               'LONG_CYCLE_SAMPLING_RATE': 0,
+               'SHORT_CYCLE': False,
+               'SHORT_CYCLE_FACTORS': [0.5, 0.7071067811865476]},
+ 'NONLOCAL': {'GROUP': [[1, 1], [1, 1], [1, 1], [1, 1]],
+              'INSTANTIATION': 'dot_product',
+              'LOCATION': [[[], []], [[], []], [[], []], [[], []]],
+              'POOL': [[[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]]]},
+ 'NUM_GPUS': 8,
+ 'NUM_SHARDS': 1,
+ 'OUTPUT_DIR': '.',
+ 'RESNET': {'DEPTH': 50,
+            'INPLACE_RELU': True,
+            'NUM_BLOCK_TEMP_KERNEL': [[3, 3], [4, 4], [6, 6], [3, 3]],
+            'NUM_GROUPS': 1,
+            'SPATIAL_DILATIONS': [[1, 1], [1, 1], [1, 1], [1, 1]],
+            'SPATIAL_STRIDES': [[1, 1], [2, 2], [2, 2], [2, 2]],
+            'STRIDE_1X1': False,
+            'TRANS_FUNC': 'bottleneck_transform',
+            'WIDTH_PER_GROUP': 64,
+            'ZERO_INIT_FINAL_BN': True},
+ 'RNG_SEED': 0,
+ 'SHARD_ID': 0,
+ 'SLOWFAST': {'ALPHA': 4,
+              'BETA_INV': 8,
+              'FUSION_CONV_CHANNEL_RATIO': 2,
+              'FUSION_KERNEL_SZ': 7},
+ 'SOLVER': {'BASE_LR': 0.1,
+            'DAMPENING': 0.0,
+            'GAMMA': 0.1,
+            'LRS': [],
+            'LR_POLICY': 'cosine',
+            'MAX_EPOCH': 196,
+            'MOMENTUM': 0.9,
+            'NESTEROV': True,
+            'OPTIMIZING_METHOD': 'sgd',
+            'STEPS': [],
+            'STEP_SIZE': 1,
+            'WARMUP_EPOCHS': 34.0,
+            'WARMUP_FACTOR': 0.1,
+            'WARMUP_START_LR': 0.01,
+            'WEIGHT_DECAY': 0.0001},
+ 'TENSORBOARD': {'CATEGORIES_PATH': '',
+                 'CLASS_NAMES_PATH': '',
+                 'CONFUSION_MATRIX': {'ENABLE': False,
+                                      'FIGSIZE': [8, 8],
+                                      'SUBSET_PATH': ''},
+                 'ENABLE': False,
+                 'HISTOGRAM': {'ENABLE': False,
+                               'FIGSIZE': [8, 8],
+                               'SUBSET_PATH': '',
+                               'TOPK': 10},
+                 'LOG_DIR': '',
+                 'MODEL_VIS': CfgNode({'ENABLE': False})},
+ 'TEST': {'BATCH_SIZE': 64,
+          'CHECKPOINT_FILE_PATH': '',
+          'CHECKPOINT_TYPE': 'pytorch',
+          'DATASET': 'kinetics',
+          'ENABLE': True,
+          'NUM_ENSEMBLE_VIEWS': 10,
+          'NUM_SPATIAL_CROPS': 3},
+ 'TRAIN': {'AUTO_RESUME': True,
+           'BATCH_SIZE': 64,
+           'CHECKPOINT_FILE_PATH': '',
+           'CHECKPOINT_INFLATE': False,
+           'CHECKPOINT_PERIOD': 1,
+           'CHECKPOINT_TYPE': 'pytorch',
+           'DATASET': 'kinetics',
+           'ENABLE': True,
+           'EVAL_PERIOD': 10}}
+[07/19 14:46:16][INFO] train_net:  357: Train with config:
+[07/19 14:46:16][INFO] train_net:  358: {'AVA': {'ANNOTATION_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'BGR': False,
+         'DETECTION_SCORE_THRESH': 0.9,
+         'EXCLUSION_FILE': 'ava_val_excluded_timestamps_v2.2.csv',
+         'FRAME_DIR': '/mnt/fair-flash3-east/ava_trainval_frames.img/',
+         'FRAME_LIST_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'FULL_TEST_ON_VAL': False,
+         'GROUNDTRUTH_FILE': 'ava_val_v2.2.csv',
+         'IMG_PROC_BACKEND': 'cv2',
+         'LABEL_MAP_FILE': 'ava_action_list_v2.2_for_activitynet_2019.pbtxt',
+         'TEST_FORCE_FLIP': False,
+         'TEST_LISTS': ['val.csv'],
+         'TEST_PREDICT_BOX_LISTS': ['ava_val_predicted_boxes.csv'],
+         'TRAIN_GT_BOX_LISTS': ['ava_train_v2.2.csv'],
+         'TRAIN_LISTS': ['train.csv'],
+         'TRAIN_PCA_EIGVAL': [0.225, 0.224, 0.229],
+         'TRAIN_PCA_EIGVEC': [[-0.5675, 0.7192, 0.4009],
+                              [-0.5808, -0.0045, -0.814],
+                              [-0.5836, -0.6948, 0.4203]],
+         'TRAIN_PCA_JITTER_ONLY': True,
+         'TRAIN_PREDICT_BOX_LISTS': [],
+         'TRAIN_USE_COLOR_AUGMENTATION': False},
+ 'BENCHMARK': CfgNode({'NUM_EPOCHS': 5, 'LOG_PERIOD': 100, 'SHUFFLE': True}),
+ 'BN': {'NORM_TYPE': 'batchnorm',
+        'NUM_BATCHES_PRECISE': 200,
+        'NUM_SPLITS': 1,
+        'NUM_SYNC_DEVICES': 1,
+        'USE_PRECISE_STATS': True,
+        'WEIGHT_DECAY': 0.0},
+ 'DATA': {'CROP_SIZE': 224,
+          'DECODING_BACKEND': 'pyav',
+          'ENSEMBLE_METHOD': 'sum',
+          'INPUT_CHANNEL_NUM': [3, 3],
+          'INV_UNIFORM_SAMPLE': False,
+          'MEAN': [0.45, 0.45, 0.45],
+          'MULTI_LABEL': False,
+          'NUM_FRAMES': 32,
+          'PATH_LABEL_SEPARATOR': ' ',
+          'PATH_PREFIX': '',
+          'PATH_TO_DATA_DIR': '',
+          'RANDOM_FLIP': True,
+          'REVERSE_INPUT_CHANNEL': False,
+          'SAMPLING_RATE': 2,
+          'STD': [0.225, 0.225, 0.225],
+          'TARGET_FPS': 30,
+          'TEST_CROP_SIZE': 256,
+          'TRAIN_CROP_SIZE': 224,
+          'TRAIN_JITTER_SCALES': [256, 320]},
+ 'DATA_LOADER': {'ENABLE_MULTI_THREAD_DECODE': False,
+                 'NUM_WORKERS': 8,
+                 'PIN_MEMORY': True},
+ 'DEMO': {'DATA_SOURCE': 0,
+          'DETECTRON2_OBJECT_DETECTION_MODEL_CFG': '',
+          'DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS': '',
+          'DISPLAY_HEIGHT': 0,
+          'DISPLAY_WIDTH': 0,
+          'ENABLE': False,
+          'LABEL_FILE_PATH': '',
+          'OUTPUT_FILE': ''},
+ 'DETECTION': {'ALIGNED': True,
+               'ENABLE': False,
+               'ROI_XFORM_RESOLUTION': 7,
+               'SPATIAL_SCALE_FACTOR': 16},
+ 'DIST_BACKEND': 'nccl',
+ 'LOG_MODEL_INFO': True,
+ 'LOG_PERIOD': 10,
+ 'MODEL': {'ARCH': 'slowfast',
+           'DROPOUT_RATE': 0.5,
+           'FC_INIT_STD': 0.01,
+           'HEAD_ACT': 'softmax',
+           'LOSS_FUNC': 'cross_entropy',
+           'MODEL_NAME': 'SlowFast',
+           'MULTI_PATHWAY_ARCH': ['slowfast'],
+           'NUM_CLASSES': 400,
+           'SINGLE_PATHWAY_ARCH': ['c2d', 'i3d', 'slow']},
+ 'MULTIGRID': {'BN_BASE_SIZE': 8,
+               'DEFAULT_B': 0,
+               'DEFAULT_S': 0,
+               'DEFAULT_T': 0,
+               'EPOCH_FACTOR': 1.5,
+               'EVAL_FREQ': 3,
+               'LONG_CYCLE': False,
+               'LONG_CYCLE_FACTORS': [(0.25, 0.7071067811865476),
+                                      (0.5, 0.7071067811865476),
+                                      (0.5, 1),
+                                      (1, 1)],
+               'LONG_CYCLE_SAMPLING_RATE': 0,
+               'SHORT_CYCLE': False,
+               'SHORT_CYCLE_FACTORS': [0.5, 0.7071067811865476]},
+ 'NONLOCAL': {'GROUP': [[1, 1], [1, 1], [1, 1], [1, 1]],
+              'INSTANTIATION': 'dot_product',
+              'LOCATION': [[[], []], [[], []], [[], []], [[], []]],
+              'POOL': [[[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]]]},
+ 'NUM_GPUS': 8,
+ 'NUM_SHARDS': 1,
+ 'OUTPUT_DIR': '.',
+ 'RESNET': {'DEPTH': 50,
+            'INPLACE_RELU': True,
+            'NUM_BLOCK_TEMP_KERNEL': [[3, 3], [4, 4], [6, 6], [3, 3]],
+            'NUM_GROUPS': 1,
+            'SPATIAL_DILATIONS': [[1, 1], [1, 1], [1, 1], [1, 1]],
+            'SPATIAL_STRIDES': [[1, 1], [2, 2], [2, 2], [2, 2]],
+            'STRIDE_1X1': False,
+            'TRANS_FUNC': 'bottleneck_transform',
+            'WIDTH_PER_GROUP': 64,
+            'ZERO_INIT_FINAL_BN': True},
+ 'RNG_SEED': 0,
+ 'SHARD_ID': 0,
+ 'SLOWFAST': {'ALPHA': 4,
+              'BETA_INV': 8,
+              'FUSION_CONV_CHANNEL_RATIO': 2,
+              'FUSION_KERNEL_SZ': 7},
+ 'SOLVER': {'BASE_LR': 0.1,
+            'DAMPENING': 0.0,
+            'GAMMA': 0.1,
+            'LRS': [],
+            'LR_POLICY': 'cosine',
+            'MAX_EPOCH': 196,
+            'MOMENTUM': 0.9,
+            'NESTEROV': True,
+            'OPTIMIZING_METHOD': 'sgd',
+            'STEPS': [],
+            'STEP_SIZE': 1,
+            'WARMUP_EPOCHS': 34.0,
+            'WARMUP_FACTOR': 0.1,
+            'WARMUP_START_LR': 0.01,
+            'WEIGHT_DECAY': 0.0001},
+ 'TENSORBOARD': {'CATEGORIES_PATH': '',
+                 'CLASS_NAMES_PATH': '',
+                 'CONFUSION_MATRIX': {'ENABLE': False,
+                                      'FIGSIZE': [8, 8],
+                                      'SUBSET_PATH': ''},
+                 'ENABLE': False,
+                 'HISTOGRAM': {'ENABLE': False,
+                               'FIGSIZE': [8, 8],
+                               'SUBSET_PATH': '',
+                               'TOPK': 10},
+                 'LOG_DIR': '',
+                 'MODEL_VIS': CfgNode({'ENABLE': False})},
+ 'TEST': {'BATCH_SIZE': 64,
+          'CHECKPOINT_FILE_PATH': '',
+          'CHECKPOINT_TYPE': 'pytorch',
+          'DATASET': 'kinetics',
+          'ENABLE': True,
+          'NUM_ENSEMBLE_VIEWS': 10,
+          'NUM_SPATIAL_CROPS': 3},
+ 'TRAIN': {'AUTO_RESUME': True,
+           'BATCH_SIZE': 64,
+           'CHECKPOINT_FILE_PATH': '',
+           'CHECKPOINT_INFLATE': False,
+           'CHECKPOINT_PERIOD': 1,
+           'CHECKPOINT_TYPE': 'pytorch',
+           'DATASET': 'kinetics',
+           'ENABLE': True,
+           'EVAL_PERIOD': 10}}
+[07/19 14:47:30][INFO] train_net:  357: Train with config:
+[07/19 14:47:30][INFO] train_net:  358: {'AVA': {'ANNOTATION_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'BGR': False,
+         'DETECTION_SCORE_THRESH': 0.9,
+         'EXCLUSION_FILE': 'ava_val_excluded_timestamps_v2.2.csv',
+         'FRAME_DIR': '/mnt/fair-flash3-east/ava_trainval_frames.img/',
+         'FRAME_LIST_DIR': '/mnt/vol/gfsai-flash3-east/ai-group/users/haoqifan/ava/frame_list/',
+         'FULL_TEST_ON_VAL': False,
+         'GROUNDTRUTH_FILE': 'ava_val_v2.2.csv',
+         'IMG_PROC_BACKEND': 'cv2',
+         'LABEL_MAP_FILE': 'ava_action_list_v2.2_for_activitynet_2019.pbtxt',
+         'TEST_FORCE_FLIP': False,
+         'TEST_LISTS': ['val.csv'],
+         'TEST_PREDICT_BOX_LISTS': ['ava_val_predicted_boxes.csv'],
+         'TRAIN_GT_BOX_LISTS': ['ava_train_v2.2.csv'],
+         'TRAIN_LISTS': ['train.csv'],
+         'TRAIN_PCA_EIGVAL': [0.225, 0.224, 0.229],
+         'TRAIN_PCA_EIGVEC': [[-0.5675, 0.7192, 0.4009],
+                              [-0.5808, -0.0045, -0.814],
+                              [-0.5836, -0.6948, 0.4203]],
+         'TRAIN_PCA_JITTER_ONLY': True,
+         'TRAIN_PREDICT_BOX_LISTS': [],
+         'TRAIN_USE_COLOR_AUGMENTATION': False},
+ 'BENCHMARK': CfgNode({'NUM_EPOCHS': 5, 'LOG_PERIOD': 100, 'SHUFFLE': True}),
+ 'BN': {'NORM_TYPE': 'batchnorm',
+        'NUM_BATCHES_PRECISE': 200,
+        'NUM_SPLITS': 1,
+        'NUM_SYNC_DEVICES': 1,
+        'USE_PRECISE_STATS': True,
+        'WEIGHT_DECAY': 0.0},
+ 'DATA': {'CROP_SIZE': 224,
+          'DECODING_BACKEND': 'pyav',
+          'ENSEMBLE_METHOD': 'sum',
+          'INPUT_CHANNEL_NUM': [3, 3],
+          'INV_UNIFORM_SAMPLE': False,
+          'MEAN': [0.45, 0.45, 0.45],
+          'MULTI_LABEL': False,
+          'NUM_FRAMES': 32,
+          'PATH_LABEL_SEPARATOR': ' ',
+          'PATH_PREFIX': '',
+          'PATH_TO_DATA_DIR': '',
+          'RANDOM_FLIP': True,
+          'REVERSE_INPUT_CHANNEL': False,
+          'SAMPLING_RATE': 2,
+          'STD': [0.225, 0.225, 0.225],
+          'TARGET_FPS': 30,
+          'TEST_CROP_SIZE': 256,
+          'TRAIN_CROP_SIZE': 224,
+          'TRAIN_JITTER_SCALES': [256, 320]},
+ 'DATA_LOADER': {'ENABLE_MULTI_THREAD_DECODE': False,
+                 'NUM_WORKERS': 8,
+                 'PIN_MEMORY': True},
+ 'DEMO': {'DATA_SOURCE': 0,
+          'DETECTRON2_OBJECT_DETECTION_MODEL_CFG': '',
+          'DETECTRON2_OBJECT_DETECTION_MODEL_WEIGHTS': '',
+          'DISPLAY_HEIGHT': 0,
+          'DISPLAY_WIDTH': 0,
+          'ENABLE': False,
+          'LABEL_FILE_PATH': '',
+          'OUTPUT_FILE': ''},
+ 'DETECTION': {'ALIGNED': True,
+               'ENABLE': False,
+               'ROI_XFORM_RESOLUTION': 7,
+               'SPATIAL_SCALE_FACTOR': 16},
+ 'DIST_BACKEND': 'nccl',
+ 'LOG_MODEL_INFO': True,
+ 'LOG_PERIOD': 10,
+ 'MODEL': {'ARCH': 'slowfast',
+           'DROPOUT_RATE': 0.5,
+           'FC_INIT_STD': 0.01,
+           'HEAD_ACT': 'softmax',
+           'LOSS_FUNC': 'cross_entropy',
+           'MODEL_NAME': 'SlowFast',
+           'MULTI_PATHWAY_ARCH': ['slowfast'],
+           'NUM_CLASSES': 400,
+           'SINGLE_PATHWAY_ARCH': ['c2d', 'i3d', 'slow']},
+ 'MULTIGRID': {'BN_BASE_SIZE': 8,
+               'DEFAULT_B': 0,
+               'DEFAULT_S': 0,
+               'DEFAULT_T': 0,
+               'EPOCH_FACTOR': 1.5,
+               'EVAL_FREQ': 3,
+               'LONG_CYCLE': False,
+               'LONG_CYCLE_FACTORS': [(0.25, 0.7071067811865476),
+                                      (0.5, 0.7071067811865476),
+                                      (0.5, 1),
+                                      (1, 1)],
+               'LONG_CYCLE_SAMPLING_RATE': 0,
+               'SHORT_CYCLE': False,
+               'SHORT_CYCLE_FACTORS': [0.5, 0.7071067811865476]},
+ 'NONLOCAL': {'GROUP': [[1, 1], [1, 1], [1, 1], [1, 1]],
+              'INSTANTIATION': 'dot_product',
+              'LOCATION': [[[], []], [[], []], [[], []], [[], []]],
+              'POOL': [[[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]],
+                       [[1, 2, 2], [1, 2, 2]]]},
+ 'NUM_GPUS': 8,
+ 'NUM_SHARDS': 1,
+ 'OUTPUT_DIR': '.',
+ 'RESNET': {'DEPTH': 50,
+            'INPLACE_RELU': True,
+            'NUM_BLOCK_TEMP_KERNEL': [[3, 3], [4, 4], [6, 6], [3, 3]],
+            'NUM_GROUPS': 1,
+            'SPATIAL_DILATIONS': [[1, 1], [1, 1], [1, 1], [1, 1]],
+            'SPATIAL_STRIDES': [[1, 1], [2, 2], [2, 2], [2, 2]],
+            'STRIDE_1X1': False,
+            'TRANS_FUNC': 'bottleneck_transform',
+            'WIDTH_PER_GROUP': 64,
+            'ZERO_INIT_FINAL_BN': True},
+ 'RNG_SEED': 0,
+ 'SHARD_ID': 0,
+ 'SLOWFAST': {'ALPHA': 4,
+              'BETA_INV': 8,
+              'FUSION_CONV_CHANNEL_RATIO': 2,
+              'FUSION_KERNEL_SZ': 7},
+ 'SOLVER': {'BASE_LR': 0.1,
+            'DAMPENING': 0.0,
+            'GAMMA': 0.1,
+            'LRS': [],
+            'LR_POLICY': 'cosine',
+            'MAX_EPOCH': 196,
+            'MOMENTUM': 0.9,
+            'NESTEROV': True,
+            'OPTIMIZING_METHOD': 'sgd',
+            'STEPS': [],
+            'STEP_SIZE': 1,
+            'WARMUP_EPOCHS': 34.0,
+            'WARMUP_FACTOR': 0.1,
+            'WARMUP_START_LR': 0.01,
+            'WEIGHT_DECAY': 0.0001},
+ 'TENSORBOARD': {'CATEGORIES_PATH': '',
+                 'CLASS_NAMES_PATH': '',
+                 'CONFUSION_MATRIX': {'ENABLE': False,
+                                      'FIGSIZE': [8, 8],
+                                      'SUBSET_PATH': ''},
+                 'ENABLE': False,
+                 'HISTOGRAM': {'ENABLE': False,
+                               'FIGSIZE': [8, 8],
+                               'SUBSET_PATH': '',
+                               'TOPK': 10},
+                 'LOG_DIR': '',
+                 'MODEL_VIS': CfgNode({'ENABLE': False})},
+ 'TEST': {'BATCH_SIZE': 64,
+          'CHECKPOINT_FILE_PATH': '',
+          'CHECKPOINT_TYPE': 'pytorch',
+          'DATASET': 'kinetics',
+          'ENABLE': True,
+          'NUM_ENSEMBLE_VIEWS': 10,
+          'NUM_SPATIAL_CROPS': 3},
+ 'TRAIN': {'AUTO_RESUME': True,
+           'BATCH_SIZE': 64,
+           'CHECKPOINT_FILE_PATH': '',
+           'CHECKPOINT_INFLATE': False,
+           'CHECKPOINT_PERIOD': 1,
+           'CHECKPOINT_TYPE': 'pytorch',
+           'DATASET': 'kinetics',
+           'ENABLE': True,
+           'EVAL_PERIOD': 10}}

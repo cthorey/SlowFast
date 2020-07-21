@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-
 """Argument parser functions."""
 
 import argparse
@@ -26,8 +25,7 @@ def parse_args():
             overwrites the config loaded from file.
         """
     parser = argparse.ArgumentParser(
-        description="Provide SlowFast video training and testing pipeline."
-    )
+        description="Provide SlowFast video training and testing pipeline.")
     parser.add_argument(
         "--shard_id",
         help="The shard id of current node, Starts from 0 to num_shards - 1",
@@ -59,6 +57,7 @@ def parse_args():
         default=None,
         nargs=argparse.REMAINDER,
     )
+    return parser.parse_args()
     if len(sys.argv) == 1:
         parser.print_help()
     return parser.parse_args()
@@ -89,6 +88,23 @@ def load_config(args):
     if hasattr(args, "output_dir"):
         cfg.OUTPUT_DIR = args.output_dir
 
+    # Create the checkpoint dir.
+    cu.make_checkpoint_dir(cfg.OUTPUT_DIR)
+    return cfg
+
+
+def load_config_from_file(cfg_file=None):
+    """
+    Given the arguemnts, load and initialize the configs.
+    Args:
+        args (argument): arguments includes `shard_id`, `num_shards`,
+            `init_method`, `cfg_file`, and `opts`.
+    """
+    # Setup cfg.
+    cfg = get_cfg()
+    # Load config from cfg.
+    if cfg_file is not None:
+        cfg.merge_from_file(cfg_file)
     # Create the checkpoint dir.
     cu.make_checkpoint_dir(cfg.OUTPUT_DIR)
     return cfg

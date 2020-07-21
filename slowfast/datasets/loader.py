@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-
 """Data loader."""
 
 import itertools
@@ -13,6 +12,41 @@ from torch.utils.data.sampler import RandomSampler
 from slowfast.datasets.multigrid_helper import ShortCycleBatchSampler
 
 from .build import build_dataset
+
+
+class MyDistributedSampler(DistributedSampler):
+    def __init__(self,
+                 dataset,
+                 weights,
+                 num_replicas=None,
+                 rank=None,
+                 shuffle=True,
+                 replacement=True):
+        super(MyDistributedSampler, self).__init__(dataset, num_replicas, rank,
+                                                   shuffle)
+        self.weights = torch.as_tensor(weights, dtype=torch.double)
+        self.replacement = replacement
+
+    def __iter__(self):
+        # deterministically shuffle based on epoch
+        g = torch.Generator()
+        g.manual_seed(self.epoch)
+        if self.shuffle:
+            indices = torch.randperm(len(self.dataset), generator=g).tolist()
+        else:
+            indices = list(range(len(self.dataset)))
+
+        # add extra samples to make it evenly divisible
+        indices += indices[:(self.total_size - len(indices))]
+        assert len(indices) == self.total_size
+
+        # subsample
+        indices = indices[self.rank:self.total_size:self.num_replicas]
+        assert len(indices) == self.num_samples
+
+        return iter(
+            torch.multinomial(self.weights, self.num_samples,
+                              self.replacement).tolist())
 
 
 def detection_collate(batch):
@@ -36,16 +70,14 @@ def detection_collate(batch):
             # Append idx info to the bboxes before concatenating them.
             bboxes = [
                 np.concatenate(
-                    [np.full((data[i].shape[0], 1), float(i)), data[i]], axis=1
-                )
-                for i in range(len(data))
+                    [np.full((data[i].shape[0], 1), float(i)), data[i]],
+                    axis=1) for i in range(len(data))
             ]
             bboxes = np.concatenate(bboxes, axis=0)
             collated_extra_data[key] = torch.tensor(bboxes).float()
         elif key == "metadata":
             collated_extra_data[key] = torch.tensor(
-                list(itertools.chain(*data))
-            ).view(-1, 2)
+                list(itertools.chain(*data))).view(-1, 2)
         else:
             collated_extra_data[key] = default_collate(data)
 
@@ -83,14 +115,12 @@ def construct_loader(cfg, split, is_precise_bn=False):
 
     if cfg.MULTIGRID.SHORT_CYCLE and split in ["train"] and not is_precise_bn:
         # Create a sampler for multi-process training
-        sampler = (
-            DistributedSampler(dataset)
-            if cfg.NUM_GPUS > 1
-            else RandomSampler(dataset)
-        )
-        batch_sampler = ShortCycleBatchSampler(
-            sampler, batch_size=batch_size, drop_last=drop_last, cfg=cfg
-        )
+        sampler = (DistributedSampler(dataset)
+                   if cfg.NUM_GPUS > 1 else RandomSampler(dataset))
+        batch_sampler = ShortCycleBatchSampler(sampler,
+                                               batch_size=batch_size,
+                                               drop_last=drop_last,
+                                               cfg=cfg)
         # Create a loader
         loader = torch.utils.data.DataLoader(
             dataset,
@@ -99,8 +129,14 @@ def construct_loader(cfg, split, is_precise_bn=False):
             pin_memory=cfg.DATA_LOADER.PIN_MEMORY,
         )
     else:
+        id2weight = {1: 0.97484, 0: 0.02515999999999996}
+        targets = [id2weight[l] for l in dataset._labels]
+        w = torch.Tensor(targets).double()
         # Create a sampler for multi-process training
-        sampler = DistributedSampler(dataset) if cfg.NUM_GPUS > 1 else None
+        if cfg.NUM_GPUS > 1:
+            sampler = MyDistributedSampler(dataset, weights=w)
+        else:
+            sampler = torch.utils.data.sampler.WeightedRandomSampler(w, len(w))
         # Create a loader
         loader = torch.utils.data.DataLoader(
             dataset,
@@ -122,14 +158,13 @@ def shuffle_dataset(loader, cur_epoch):
         loader (loader): data loader to perform shuffle.
         cur_epoch (int): number of the current epoch.
     """
-    sampler = (
-        loader.batch_sampler.sampler
-        if isinstance(loader.batch_sampler, ShortCycleBatchSampler)
-        else loader.sampler
-    )
+    sampler = (loader.batch_sampler.sampler if isinstance(
+        loader.batch_sampler, ShortCycleBatchSampler) else loader.sampler)
     assert isinstance(
-        sampler, (RandomSampler, DistributedSampler)
-    ), "Sampler type '{}' not supported".format(type(sampler))
+        sampler,
+        (RandomSampler,
+         DistributedSampler)), "Sampler type '{}' not supported".format(
+             type(sampler))
     # RandomSampler handles shuffling automatically
     if isinstance(sampler, DistributedSampler):
         # DistributedSampler shuffles data based on epoch

@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-
 """Train a video classification model."""
 import numpy as np
 import pprint
 import torch
 from fvcore.nn.precise_bn import get_bn_modules, update_bn_stats
-
+from pytorch_lightning import metrics as plmetrics
 import slowfast.models.losses as losses
 import slowfast.models.optimizer as optim
 import slowfast.utils.checkpoint as cu
@@ -23,9 +22,13 @@ from slowfast.utils.multigrid import MultigridSchedule
 logger = logging.get_logger(__name__)
 
 
-def train_epoch(
-    train_loader, model, optimizer, train_meter, cur_epoch, cfg, writer=None
-):
+def train_epoch(train_loader,
+                model,
+                optimizer,
+                train_meter,
+                cur_epoch,
+                cfg,
+                writer=None):
     """
     Perform the video training for one epoch.
     Args:
@@ -46,15 +49,17 @@ def train_epoch(
     data_size = len(train_loader)
 
     for cur_iter, (inputs, labels, _, meta) in enumerate(train_loader):
+        if cur_iter > 100:
+            break
         # Transfer the data to the current GPU device.
-        if isinstance(inputs, (list,)):
+        if isinstance(inputs, (list, )):
             for i in range(len(inputs)):
                 inputs[i] = inputs[i].cuda(non_blocking=True)
         else:
             inputs = inputs.cuda(non_blocking=True)
         labels = labels.cuda()
         for key, val in meta.items():
-            if isinstance(val, (list,)):
+            if isinstance(val, (list, )):
                 for i in range(len(val)):
                     val[i] = val[i].cuda(non_blocking=True)
             else:
@@ -97,7 +102,10 @@ def train_epoch(
             # write to tensorboard format if available.
             if writer is not None:
                 writer.add_scalars(
-                    {"Train/loss": loss, "Train/lr": lr},
+                    {
+                        "Train/loss": loss,
+                        "Train/lr": lr
+                    },
                     global_step=data_size * cur_epoch + cur_iter,
                 )
 
@@ -110,16 +118,24 @@ def train_epoch(
                 loss = loss.item()
             else:
                 # Compute the errors.
-                num_topks_correct = metrics.topks_correct(preds, labels, (1, 5))
-                top1_err, top5_err = [
-                    (1.0 - x / preds.size(0)) * 100.0 for x in num_topks_correct
-                ]
+                # loggin.info('MYLOGGING')
+                # logging.info(preds)
+                # logging.info(labels)
+                # ypred = torch.argmax(preds, dim=1)
+                # cm = plmetrics.ConfusionMatrix()(ypred, labels)
+                # tp, tn, fn, fp = cm[1, 1], cm[0, 0], cm[0, 1], cm[1, 0]
+                # mcc = (tp * tn - fp * fn) / torch.sqrt(
+                #     (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+
+                num_topks_correct = metrics.topks_correct(
+                    preds, labels, (1, 2))
+                top1_err, top5_err = [(1.0 - x / preds.size(0)) * 100.0
+                                      for x in num_topks_correct]
 
                 # Gather all the predictions across all the devices.
                 if cfg.NUM_GPUS > 1:
                     loss, top1_err, top5_err = du.all_reduce(
-                        [loss, top1_err, top5_err]
-                    )
+                        [loss, top1_err, top5_err])
 
                 # Copy the stats from GPU to CPU (sync point).
                 loss, top1_err, top5_err = (
@@ -130,9 +146,8 @@ def train_epoch(
 
             train_meter.iter_toc()
             # Update and log stats.
-            train_meter.update_stats(
-                top1_err, top5_err, loss, lr, inputs[0].size(0) * cfg.NUM_GPUS
-            )
+            train_meter.update_stats(top1_err, top5_err, loss, lr,
+                                     inputs[0].size(0) * cfg.NUM_GPUS)
             # write to tensorboard format if available.
             if writer is not None:
                 writer.add_scalars(
@@ -174,14 +189,14 @@ def eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer=None):
 
     for cur_iter, (inputs, labels, _, meta) in enumerate(val_loader):
         # Transferthe data to the current GPU device.
-        if isinstance(inputs, (list,)):
+        if isinstance(inputs, (list, )):
             for i in range(len(inputs)):
                 inputs[i] = inputs[i].cuda(non_blocking=True)
         else:
             inputs = inputs.cuda(non_blocking=True)
         labels = labels.cuda()
         for key, val in meta.items():
-            if isinstance(val, (list,)):
+            if isinstance(val, (list, )):
                 for i in range(len(val)):
                     val[i] = val[i].cuda(non_blocking=True)
             else:
@@ -197,12 +212,14 @@ def eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer=None):
 
             if cfg.NUM_GPUS > 1:
                 preds = torch.cat(du.all_gather_unaligned(preds), dim=0)
-                ori_boxes = torch.cat(du.all_gather_unaligned(ori_boxes), dim=0)
+                ori_boxes = torch.cat(du.all_gather_unaligned(ori_boxes),
+                                      dim=0)
                 metadata = torch.cat(du.all_gather_unaligned(metadata), dim=0)
 
             val_meter.iter_toc()
             # Update and log stats.
-            val_meter.update_stats(preds.cpu(), ori_boxes.cpu(), metadata.cpu())
+            val_meter.update_stats(preds.cpu(), ori_boxes.cpu(),
+                                   metadata.cpu())
 
         else:
             preds = model(inputs)
@@ -212,12 +229,12 @@ def eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer=None):
                     preds, labels = du.all_gather([preds, labels])
             else:
                 # Compute the errors.
-                num_topks_correct = metrics.topks_correct(preds, labels, (1, 5))
+                num_topks_correct = metrics.topks_correct(
+                    preds, labels, (1, 1))
 
                 # Combine the errors across the GPUs.
-                top1_err, top5_err = [
-                    (1.0 - x / preds.size(0)) * 100.0 for x in num_topks_correct
-                ]
+                top1_err, top5_err = [(1.0 - x / preds.size(0)) * 100.0
+                                      for x in num_topks_correct]
                 if cfg.NUM_GPUS > 1:
                     top1_err, top5_err = du.all_reduce([top1_err, top5_err])
 
@@ -226,13 +243,15 @@ def eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer=None):
 
                 val_meter.iter_toc()
                 # Update and log stats.
-                val_meter.update_stats(
-                    top1_err, top5_err, inputs[0].size(0) * cfg.NUM_GPUS
-                )
+                val_meter.update_stats(top1_err, top5_err,
+                                       inputs[0].size(0) * cfg.NUM_GPUS)
                 # write to tensorboard format if available.
                 if writer is not None:
                     writer.add_scalars(
-                        {"Val/Top1_err": top1_err, "Val/Top5_err": top5_err},
+                        {
+                            "Val/Top1_err": top1_err,
+                            "Val/Top5_err": top5_err
+                        },
                         global_step=len(val_loader) * cur_epoch + cur_iter,
                     )
 
@@ -246,18 +265,17 @@ def eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer=None):
     # write to tensorboard format if available.
     if writer is not None:
         if cfg.DETECTION.ENABLE:
-            writer.add_scalars(
-                {"Val/mAP": val_meter.full_map}, global_step=cur_epoch
-            )
+            writer.add_scalars({"Val/mAP": val_meter.full_map},
+                               global_step=cur_epoch)
         all_preds_cpu = [
             pred.clone().detach().cpu() for pred in val_meter.all_preds
         ]
         all_labels_cpu = [
             label.clone().detach().cpu() for label in val_meter.all_labels
         ]
-        writer.plot_eval(
-            preds=all_preds_cpu, labels=all_labels_cpu, global_step=cur_epoch
-        )
+        writer.plot_eval(preds=all_preds_cpu,
+                         labels=all_labels_cpu,
+                         global_step=cur_epoch)
 
     val_meter.reset()
 
@@ -270,10 +288,9 @@ def calculate_and_update_precise_bn(loader, model, num_iters=200):
         model (model): model to update the bn stats.
         num_iters (int): number of iterations to compute and update the bn stats.
     """
-
     def _gen_loader():
         for inputs, _, _, _ in loader:
-            if isinstance(inputs, (list,)):
+            if isinstance(inputs, (list, )):
                 for i in range(len(inputs)):
                     inputs[i] = inputs[i].cuda(non_blocking=True)
             else:
@@ -312,9 +329,9 @@ def build_trainer(cfg):
     # Create the video train and val loaders.
     train_loader = loader.construct_loader(cfg, "train")
     val_loader = loader.construct_loader(cfg, "val")
-    precise_bn_loader = loader.construct_loader(
-        cfg, "train", is_precise_bn=True
-    )
+    precise_bn_loader = loader.construct_loader(cfg,
+                                                "train",
+                                                is_precise_bn=True)
     # Create meters.
     train_meter = TrainMeter(len(train_loader), cfg)
     val_meter = ValMeter(len(val_loader), cfg)
@@ -371,9 +388,9 @@ def train(cfg):
     # Create the video train and val loaders.
     train_loader = loader.construct_loader(cfg, "train")
     val_loader = loader.construct_loader(cfg, "val")
-    precise_bn_loader = loader.construct_loader(
-        cfg, "train", is_precise_bn=True
-    )
+    precise_bn_loader = loader.construct_loader(cfg,
+                                                "train",
+                                                is_precise_bn=True)
 
     # Create meters.
     if cfg.DETECTION.ENABLE:
@@ -385,8 +402,7 @@ def train(cfg):
 
     # set up writer for logging to Tensorboard format.
     if cfg.TENSORBOARD.ENABLE and du.is_master_proc(
-        cfg.NUM_GPUS * cfg.NUM_SHARDS
-    ):
+            cfg.NUM_GPUS * cfg.NUM_SHARDS):
         writer = tb.TensorboardWriter(cfg)
     else:
         writer = None
@@ -415,16 +431,14 @@ def train(cfg):
                 else:
                     last_checkpoint = cfg.TRAIN.CHECKPOINT_FILE_PATH
                 logger.info("Load from {}".format(last_checkpoint))
-                cu.load_checkpoint(
-                    last_checkpoint, model, cfg.NUM_GPUS > 1, optimizer
-                )
+                cu.load_checkpoint(last_checkpoint, model, cfg.NUM_GPUS > 1,
+                                   optimizer)
 
         # Shuffle the dataset.
         loader.shuffle_dataset(train_loader, cur_epoch)
         # Train for one epoch.
-        train_epoch(
-            train_loader, model, optimizer, train_meter, cur_epoch, cfg, writer
-        )
+        train_epoch(train_loader, model, optimizer, train_meter, cur_epoch,
+                    cfg, writer)
 
         # Compute precise BN stats.
         if cfg.BN.USE_PRECISE_STATS and len(get_bn_modules(model)) > 0:
@@ -437,13 +451,14 @@ def train(cfg):
 
         # Save a checkpoint.
         if cu.is_checkpoint_epoch(
-            cfg, cur_epoch, None if multigrid is None else multigrid.schedule
-        ):
-            cu.save_checkpoint(cfg.OUTPUT_DIR, model, optimizer, cur_epoch, cfg)
+                cfg, cur_epoch,
+                None if multigrid is None else multigrid.schedule):
+            cu.save_checkpoint(cfg.OUTPUT_DIR, model, optimizer, cur_epoch,
+                               cfg)
         # Evaluate the model on validation set.
         if misc.is_eval_epoch(
-            cfg, cur_epoch, None if multigrid is None else multigrid.schedule
-        ):
+                cfg, cur_epoch,
+                None if multigrid is None else multigrid.schedule):
             eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer)
 
     if writer is not None:

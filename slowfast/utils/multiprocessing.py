@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-
 """Multiprocessing helpers."""
 
 import torch
 
 
-def run(
-    local_rank, num_proc, func, init_method, shard_id, num_shards, backend, cfg
-):
+def run(local_rank, num_proc, func, init_method, shard_id, num_shards, backend,
+        cfg):
     """
     Runs a function from a child process.
     Args:
@@ -35,7 +33,6 @@ def run(
     # Initialize the process group.
     world_size = num_proc * num_shards
     rank = shard_id * num_proc + local_rank
-
     try:
         torch.distributed.init_process_group(
             backend=backend,
@@ -45,6 +42,5 @@ def run(
         )
     except Exception as e:
         raise e
-
     torch.cuda.set_device(local_rank)
     func(cfg)
