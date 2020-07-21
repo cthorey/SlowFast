@@ -18,7 +18,9 @@ from slowfast.datasets import loader
 from slowfast.models import build_model
 from slowfast.utils.meters import AVAMeter, TrainMeter, ValMeter
 from slowfast.utils.multigrid import MultigridSchedule
-
+import datetime
+import os
+from pytorch_lightning import metrics as plmetrics
 logger = logging.get_logger(__name__)
 
 
@@ -49,8 +51,6 @@ def train_epoch(train_loader,
     data_size = len(train_loader)
 
     for cur_iter, (inputs, labels, _, meta) in enumerate(train_loader):
-        if cur_iter > 100:
-            break
         # Transfer the data to the current GPU device.
         if isinstance(inputs, (list, )):
             for i in range(len(inputs)):
@@ -117,16 +117,6 @@ def train_epoch(train_loader,
                     [loss] = du.all_reduce([loss])
                 loss = loss.item()
             else:
-                # Compute the errors.
-                # loggin.info('MYLOGGING')
-                # logging.info(preds)
-                # logging.info(labels)
-                # ypred = torch.argmax(preds, dim=1)
-                # cm = plmetrics.ConfusionMatrix()(ypred, labels)
-                # tp, tn, fn, fp = cm[1, 1], cm[0, 0], cm[0, 1], cm[1, 0]
-                # mcc = (tp * tn - fp * fn) / torch.sqrt(
-                #     (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
-
                 num_topks_correct = metrics.topks_correct(
                     preds, labels, (1, 2))
                 top1_err, top5_err = [(1.0 - x / preds.size(0)) * 100.0
@@ -260,24 +250,38 @@ def eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer=None):
         val_meter.log_iter_stats(cur_epoch, cur_iter)
         val_meter.iter_tic()
 
+    logger.info('COMPUTING MCC')
     # Log epoch stats.
     val_meter.log_epoch_stats(cur_epoch)
+
+    all_preds_cpu = [
+        pred.clone().detach().cpu() for pred in val_meter.all_preds
+    ]
+    all_labels_cpu = [
+        label.clone().detach().cpu() for label in val_meter.all_labels
+    ]
+    logger.info('PREPROC FOR  MCC')
+    preds = torch.cat(all_preds_cpu)
+    ypreds = torch.argmax(preds, dim=1)
+    ytrue = torch.cat(all_labels_cpu)
+    logger.info('COMPUTE CM')
+    cm = plmetrics.ConfusionMatrix()(ypreds.to('cuda'), ytrue.to('cuda'))
+    logger.info('CM COMPUTED')
+    tp, tn, fn, fp = cm[1, 1], cm[0, 0], cm[0, 1], cm[1, 0]
+    denom = (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
+    mcc = (tp * tn - fp * fn) / torch.sqrt(denom)
+    logger.info('COMPUTED  MCC')
     # write to tensorboard format if available.
     if writer is not None:
         if cfg.DETECTION.ENABLE:
             writer.add_scalars({"Val/mAP": val_meter.full_map},
                                global_step=cur_epoch)
-        all_preds_cpu = [
-            pred.clone().detach().cpu() for pred in val_meter.all_preds
-        ]
-        all_labels_cpu = [
-            label.clone().detach().cpu() for label in val_meter.all_labels
-        ]
         writer.plot_eval(preds=all_preds_cpu,
                          labels=all_labels_cpu,
                          global_step=cur_epoch)
 
     val_meter.reset()
+    return mcc.item()
 
 
 def calculate_and_update_precise_bn(loader, model, num_iters=200):
@@ -373,6 +377,7 @@ def train(cfg):
     # Print config.
     logger.info("Train with config:")
     logger.info(pprint.pformat(cfg))
+    logger.info(cfg.OUTPUT_DIR)
 
     # Build the video model and print model statistics.
     model = build_model(cfg)
@@ -409,6 +414,8 @@ def train(cfg):
 
     # Perform the training loop.
     logger.info("Start epoch: {}".format(start_epoch + 1))
+    best_mcc = -1
+    patience = 0
 
     for cur_epoch in range(start_epoch, cfg.SOLVER.MAX_EPOCH):
         if cfg.MULTIGRID.LONG_CYCLE:
@@ -435,8 +442,14 @@ def train(cfg):
                                    optimizer)
 
         # Shuffle the dataset.
-        loader.shuffle_dataset(train_loader, cur_epoch)
+        logger.info('SHUFFLE THE DATASET')
+        try:
+            loader.shuffle_dataset(train_loader, cur_epoch)
+        except:
+            pass
+
         # Train for one epoch.
+        logger.info('TRAINING PHASE')
         train_epoch(train_loader, model, optimizer, train_meter, cur_epoch,
                     cfg, writer)
 
@@ -449,17 +462,22 @@ def train(cfg):
             )
         _ = misc.aggregate_sub_bn_stats(model)
 
+        logger.info('EVALUATION PHASE')
+        current_mcc = eval_epoch(val_loader, model, val_meter, cur_epoch, cfg,
+                                 writer)
+        if current_mcc > best_mcc:
+            path = cu.save_checkpoint(cfg.OUTPUT_DIR, model, optimizer,
+                                      cur_epoch, cfg, current_mcc)
+            logger.info('BEST checkpoint {} / mcc: {}'.format(
+                path, current_mcc))
+            best_mcc = current_mcc
+
         # Save a checkpoint.
         if cu.is_checkpoint_epoch(
                 cfg, cur_epoch,
                 None if multigrid is None else multigrid.schedule):
             cu.save_checkpoint(cfg.OUTPUT_DIR, model, optimizer, cur_epoch,
-                               cfg)
-        # Evaluate the model on validation set.
-        if misc.is_eval_epoch(
-                cfg, cur_epoch,
-                None if multigrid is None else multigrid.schedule):
-            eval_epoch(val_loader, model, val_meter, cur_epoch, cfg, writer)
+                               cfg, current_mcc)
 
     if writer is not None:
         writer.close()

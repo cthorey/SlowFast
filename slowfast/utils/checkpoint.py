@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-
 """Functions that handle saving and loading of checkpoints."""
 
 import copy
@@ -43,14 +42,14 @@ def get_checkpoint_dir(path_to_job):
     return os.path.join(path_to_job, "checkpoints")
 
 
-def get_path_to_checkpoint(path_to_job, epoch):
+def get_path_to_checkpoint(path_to_job, epoch, mcc):
     """
     Get the full path to a checkpoint file.
     Args:
         path_to_job (string): the path to the folder of the current job.
         epoch (int): the number of epoch for the checkpoint.
     """
-    name = "checkpoint_epoch_{:05d}.pyth".format(epoch)
+    name = "checkpoint_epoch_{:05d}_valmcc{:.2f}.pyth".format(epoch, mcc)
     return os.path.join(get_checkpoint_dir(path_to_job), name)
 
 
@@ -96,15 +95,14 @@ def is_checkpoint_epoch(cfg, cur_epoch, multigrid_schedule=None):
         for s in multigrid_schedule:
             if cur_epoch < s[-1]:
                 period = max(
-                    (s[-1] - prev_epoch) // cfg.MULTIGRID.EVAL_FREQ + 1, 1
-                )
+                    (s[-1] - prev_epoch) // cfg.MULTIGRID.EVAL_FREQ + 1, 1)
                 return (s[-1] - 1 - cur_epoch) % period == 0
             prev_epoch = s[-1]
 
     return (cur_epoch + 1) % cfg.TRAIN.CHECKPOINT_PERIOD == 0
 
 
-def save_checkpoint(path_to_job, model, optimizer, epoch, cfg):
+def save_checkpoint(path_to_job, model, optimizer, epoch, cfg, mcc):
     """
     Save a checkpoint.
     Args:
@@ -128,9 +126,10 @@ def save_checkpoint(path_to_job, model, optimizer, epoch, cfg):
         "model_state": normalized_sd,
         "optimizer_state": optimizer.state_dict(),
         "cfg": cfg.dump(),
+        'mcc': mcc
     }
     # Write the checkpoint.
-    path_to_checkpoint = get_path_to_checkpoint(path_to_job, epoch + 1)
+    path_to_checkpoint = get_path_to_checkpoint(path_to_job, epoch + 1, mcc)
     with PathManager.open(path_to_checkpoint, "wb") as f:
         torch.save(checkpoint, f)
     return path_to_checkpoint
@@ -154,34 +153,29 @@ def inflate_weight(state_dict_2d, state_dict_3d):
         v3d = state_dict_3d[k]
         # Inflate the weight of 2D conv to 3D conv.
         if len(v2d.shape) == 4 and len(v3d.shape) == 5:
-            logger.info(
-                "Inflate {}: {} -> {}: {}".format(k, v2d.shape, k, v3d.shape)
-            )
+            logger.info("Inflate {}: {} -> {}: {}".format(
+                k, v2d.shape, k, v3d.shape))
             # Dimension need to be match.
             assert v2d.shape[-2:] == v3d.shape[-2:]
             assert v2d.shape[:2] == v3d.shape[:2]
-            v3d = (
-                v2d.unsqueeze(2).repeat(1, 1, v3d.shape[2], 1, 1) / v3d.shape[2]
-            )
+            v3d = (v2d.unsqueeze(2).repeat(1, 1, v3d.shape[2], 1, 1) /
+                   v3d.shape[2])
         elif v2d.shape == v3d.shape:
             v3d = v2d
         else:
-            logger.info(
-                "Unexpected {}: {} -|> {}: {}".format(
-                    k, v2d.shape, k, v3d.shape
-                )
-            )
+            logger.info("Unexpected {}: {} -|> {}: {}".format(
+                k, v2d.shape, k, v3d.shape))
         state_dict_inflated[k] = v3d.clone()
     return state_dict_inflated
 
 
 def load_checkpoint(
-    path_to_checkpoint,
-    model,
-    data_parallel=True,
-    optimizer=None,
-    inflation=False,
-    convert_from_caffe2=False,
+        path_to_checkpoint,
+        model,
+        data_parallel=True,
+        optimizer=None,
+        inflation=False,
+        convert_from_caffe2=False,
 ):
     """
     Load the checkpoint from the given file. If inflation is True, inflate the
@@ -199,8 +193,8 @@ def load_checkpoint(
         (int): the number of training epoch of the checkpoint.
     """
     assert PathManager.exists(
-        path_to_checkpoint
-    ), "Checkpoint '{}' not found".format(path_to_checkpoint)
+        path_to_checkpoint), "Checkpoint '{}' not found".format(
+            path_to_checkpoint)
     # Account for the DDP wrapper in the multi-gpu setting.
     ms = model.module if data_parallel else model
     if convert_from_caffe2:
@@ -215,65 +209,49 @@ def load_checkpoint(
                 c2_blob_shape = caffe2_checkpoint["blobs"][key].shape
                 model_blob_shape = ms.state_dict()[converted_key].shape
                 # Load BN stats to Sub-BN.
-                if (
-                    len(model_blob_shape) == 1
-                    and len(c2_blob_shape) == 1
-                    and model_blob_shape[0] > c2_blob_shape[0]
-                    and model_blob_shape[0] % c2_blob_shape[0] == 0
-                ):
+                if (len(model_blob_shape) == 1 and len(c2_blob_shape) == 1
+                        and model_blob_shape[0] > c2_blob_shape[0]
+                        and model_blob_shape[0] % c2_blob_shape[0] == 0):
                     caffe2_checkpoint["blobs"][key] = np.concatenate(
-                        [caffe2_checkpoint["blobs"][key]]
-                        * (model_blob_shape[0] // c2_blob_shape[0])
-                    )
+                        [caffe2_checkpoint["blobs"][key]] *
+                        (model_blob_shape[0] // c2_blob_shape[0]))
                     c2_blob_shape = caffe2_checkpoint["blobs"][key].shape
 
                 if c2_blob_shape == tuple(model_blob_shape):
                     state_dict[converted_key] = torch.tensor(
-                        caffe2_checkpoint["blobs"][key]
-                    ).clone()
-                    logger.info(
-                        "{}: {} => {}: {}".format(
-                            key,
-                            c2_blob_shape,
-                            converted_key,
-                            tuple(model_blob_shape),
-                        )
-                    )
+                        caffe2_checkpoint["blobs"][key]).clone()
+                    logger.info("{}: {} => {}: {}".format(
+                        key,
+                        c2_blob_shape,
+                        converted_key,
+                        tuple(model_blob_shape),
+                    ))
                 else:
-                    logger.warn(
-                        "!! {}: {} does not match {}: {}".format(
-                            key,
-                            c2_blob_shape,
-                            converted_key,
-                            tuple(model_blob_shape),
-                        )
-                    )
+                    logger.warn("!! {}: {} does not match {}: {}".format(
+                        key,
+                        c2_blob_shape,
+                        converted_key,
+                        tuple(model_blob_shape),
+                    ))
             else:
-                if not any(
-                    prefix in key for prefix in ["momentum", "lr", "model_iter"]
-                ):
-                    logger.warn(
-                        "!! {}: can not be converted, got {}".format(
-                            key, converted_key
-                        )
-                    )
+                if not any(prefix in key
+                           for prefix in ["momentum", "lr", "model_iter"]):
+                    logger.warn("!! {}: can not be converted, got {}".format(
+                        key, converted_key))
         ms.load_state_dict(state_dict, strict=False)
         epoch = -1
     else:
         # Load the checkpoint on CPU to avoid GPU mem spike.
         with PathManager.open(path_to_checkpoint, "rb") as f:
             checkpoint = torch.load(f, map_location="cpu")
-        model_state_dict_3d = (
-            model.module.state_dict() if data_parallel else model.state_dict()
-        )
-        checkpoint["model_state"] = normal_to_sub_bn(
-            checkpoint["model_state"], model_state_dict_3d
-        )
+        model_state_dict_3d = (model.module.state_dict()
+                               if data_parallel else model.state_dict())
+        checkpoint["model_state"] = normal_to_sub_bn(checkpoint["model_state"],
+                                                     model_state_dict_3d)
         if inflation:
             # Try to inflate the model.
-            inflated_model_dict = inflate_weight(
-                checkpoint["model_state"], model_state_dict_3d
-            )
+            inflated_model_dict = inflate_weight(checkpoint["model_state"],
+                                                 model_state_dict_3d)
             ms.load_state_dict(inflated_model_dict, strict=False)
         else:
             ms.load_state_dict(checkpoint["model_state"])
@@ -370,22 +348,15 @@ def normal_to_sub_bn(checkpoint_sd, model_sd):
             model_blob_shape = model_sd[key].shape
             c2_blob_shape = checkpoint_sd[key].shape
 
-            if (
-                len(model_blob_shape) == 1
-                and len(c2_blob_shape) == 1
-                and model_blob_shape[0] > c2_blob_shape[0]
-                and model_blob_shape[0] % c2_blob_shape[0] == 0
-            ):
+            if (len(model_blob_shape) == 1 and len(c2_blob_shape) == 1
+                    and model_blob_shape[0] > c2_blob_shape[0]
+                    and model_blob_shape[0] % c2_blob_shape[0] == 0):
                 before_shape = checkpoint_sd[key].shape
                 checkpoint_sd[key] = torch.cat(
-                    [checkpoint_sd[key]]
-                    * (model_blob_shape[0] // c2_blob_shape[0])
-                )
-                logger.info(
-                    "{} {} -> {}".format(
-                        key, before_shape, checkpoint_sd[key].shape
-                    )
-                )
+                    [checkpoint_sd[key]] *
+                    (model_blob_shape[0] // c2_blob_shape[0]))
+                logger.info("{} {} -> {}".format(key, before_shape,
+                                                 checkpoint_sd[key].shape))
     return checkpoint_sd
 
 
@@ -434,9 +405,8 @@ def load_train_checkpoint(cfg, model, optimizer):
     if cfg.TRAIN.AUTO_RESUME and has_checkpoint(cfg.OUTPUT_DIR):
         last_checkpoint = get_last_checkpoint(cfg.OUTPUT_DIR)
         logger.info("Load from last checkpoint, {}.".format(last_checkpoint))
-        checkpoint_epoch = load_checkpoint(
-            last_checkpoint, model, cfg.NUM_GPUS > 1, optimizer
-        )
+        checkpoint_epoch = load_checkpoint(last_checkpoint, model,
+                                           cfg.NUM_GPUS > 1, optimizer)
         start_epoch = checkpoint_epoch + 1
     elif cfg.TRAIN.CHECKPOINT_FILE_PATH != "":
         logger.info("Load from given checkpoint file.")
